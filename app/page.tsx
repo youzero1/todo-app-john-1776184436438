@@ -56,11 +56,11 @@ export default function Home() {
   const completedTodosCount = todos.filter((t) => t.completed).length;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 py-12 px-4">
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-indigo-600 mb-2 tracking-tight">Todo</h1>
+          <h1 className="text-5xl font-bold text-orange-500 mb-2 tracking-tight">Todo</h1>
           <p className="text-gray-500 text-sm">Stay organized, get things done</p>
         </div>
 
@@ -75,7 +75,7 @@ export default function Home() {
           {todos.length > 0 && (
             <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center justify-between text-xs text-gray-500">
               <span>
-                <span className="font-semibold text-indigo-600">{activeTodosCount}</span> task{activeTodosCount !== 1 ? 's' : ''} remaining
+                <span className="font-semibold text-orange-500">{activeTodosCount}</span> task{activeTodosCount !== 1 ? 's' : ''} remaining
               </span>
               {completedTodosCount > 0 && (
                 <button

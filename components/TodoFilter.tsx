@@ -22,7 +22,7 @@ export default function TodoFilter({ currentFilter, onFilterChange }: TodoFilter
           onClick={() => onFilterChange(f.value)}
           className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
             currentFilter === f.value
-              ? 'bg-indigo-100 text-indigo-700'
+              ? 'bg-orange-100 text-orange-600'
               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
           }`}
         >

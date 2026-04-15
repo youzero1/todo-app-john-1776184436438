@@ -40,7 +40,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
 
   if (isEditing) {
     return (
-      <div className="px-6 py-4 bg-indigo-50">
+      <div className="px-6 py-4 bg-orange-50">
         <form onSubmit={handleEditSubmit}>
           <input
             type="text"
@@ -48,13 +48,13 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValue(e.target.value)}
             onKeyDown={handleEditKeyDown}
             onBlur={handleEditBlur}
-            className="w-full px-3 py-2 rounded-lg border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700"
+            className="w-full px-3 py-2 rounded-lg border border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-700"
             autoFocus
           />
           <div className="flex gap-2 mt-2">
             <button
               type="submit"
-              className="px-3 py-1 bg-indigo-500 text-white rounded-lg text-sm font-medium hover:bg-indigo-600 transition-colors"
+              className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
             >
               Save
             </button>
@@ -76,7 +76,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
 
   return (
     <div
-      className={`group flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors duration-150 ${
+      className={`group flex items-center gap-4 px-6 py-4 hover:bg-orange-50 transition-colors duration-150 ${
         todo.completed ? 'opacity-60' : ''
       }`}
     >
@@ -86,7 +86,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
         className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
           todo.completed
             ? 'bg-green-500 border-green-500'
-            : 'border-gray-300 hover:border-indigo-400'
+            : 'border-gray-300 hover:border-orange-400'
         }`}
         aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
       >
@@ -119,7 +119,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
             setEditValue(todo.text);
             setIsEditing(true);
           }}
-          className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors"
+          className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
           aria-label="Edit todo"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
