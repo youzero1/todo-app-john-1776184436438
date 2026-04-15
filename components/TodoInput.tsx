@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, RefObject } from 'react';
 import { motion } from 'framer-motion';
 
 interface TodoInputProps {
   onAdd: (text: string) => void;
+  inputRef?: RefObject<HTMLInputElement>;
 }
 
-export default function TodoInput({ onAdd }: TodoInputProps) {
+export default function TodoInput({ onAdd, inputRef }: TodoInputProps) {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
 
@@ -27,6 +28,7 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
       >
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
@@ -45,12 +47,7 @@ export default function TodoInput({ onAdd }: TodoInputProps) {
         whileHover={value.trim() ? { scale: 1.04 } : {}}
         transition={{ type: 'spring', stiffness: 400, damping: 22 }}
       >
-        <motion.span
-          className="text-lg leading-none"
-          animate={value.trim() ? { rotate: 0 } : { rotate: 0 }}
-        >
-          +
-        </motion.span>
+        <motion.span className="text-lg leading-none">+</motion.span>
         <span>Add</span>
       </motion.button>
     </form>

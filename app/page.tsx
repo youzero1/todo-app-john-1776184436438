@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import TodoList from '@/components/TodoList';
 import TodoInput from '@/components/TodoInput';
 import TodoFilter from '@/components/TodoFilter';
+import KeyboardShortcutsModal from '@/components/KeyboardShortcutsModal';
 import { Todo, FilterType } from '@/types/index';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const addTodo = (text: string) => {
     if (text.trim() === '') return;
@@ -43,9 +46,9 @@ export default function Home() {
     );
   };
 
-  const clearCompleted = () => {
+  const clearCompleted = useCallback(() => {
     setTodos((prev) => prev.filter((todo) => !todo.completed));
-  };
+  }, []);
 
   const filteredTodos = todos.filter((todo) => {
     if (filter === 'active') return !todo.completed;
@@ -56,8 +59,71 @@ export default function Home() {
   const activeTodosCount = todos.filter((t) => !t.completed).length;
   const completedTodosCount = todos.filter((t) => t.completed).length;
 
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      const isTyping = tag === 'input' || tag === 'textarea';
+
+      // Always-active shortcuts
+      if (e.key === '?' && !isTyping) {
+        e.preventDefault();
+        setShortcutsOpen((prev) => !prev);
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        if (shortcutsOpen) {
+          setShortcutsOpen(false);
+        }
+        return;
+      }
+
+      // Shortcuts that should not fire while typing in an input
+      if (isTyping) return;
+
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        inputRef.current?.focus();
+        return;
+      }
+
+      if (e.key === '1') {
+        e.preventDefault();
+        setFilter('all');
+        return;
+      }
+
+      if (e.key === '2') {
+        e.preventDefault();
+        setFilter('active');
+        return;
+      }
+
+      if (e.key === '3') {
+        e.preventDefault();
+        setFilter('completed');
+        return;
+      }
+
+      if (e.key === 'x' || e.key === 'X') {
+        e.preventDefault();
+        clearCompleted();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [shortcutsOpen, clearCompleted]);
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 py-12 px-4">
+      <KeyboardShortcutsModal
+        isOpen={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+      />
+
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <motion.div
@@ -79,7 +145,7 @@ export default function Home() {
         >
           {/* Input */}
           <div className="p-6 border-b border-gray-100">
-            <TodoInput onAdd={addTodo} />
+            <TodoInput onAdd={addTodo} inputRef={inputRef} />
           </div>
 
           {/* Stats */}
@@ -172,14 +238,27 @@ export default function Home() {
           </AnimatePresence>
         </motion.div>
 
-        <motion.p
-          className="text-center text-gray-400 text-xs mt-6"
+        {/* Footer */}
+        <motion.div
+          className="flex items-center justify-between mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.4 }}
         >
-          {todos.length} total task{todos.length !== 1 ? 's' : ''}
-        </motion.p>
+          <p className="text-gray-400 text-xs">
+            {todos.length} total task{todos.length !== 1 ? 's' : ''}
+          </p>
+          <motion.button
+            onClick={() => setShortcutsOpen(true)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-orange-500 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-orange-50"
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.04 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+          >
+            <kbd className="inline-flex items-center justify-center w-5 h-5 bg-white border border-gray-200 text-gray-500 text-xs font-semibold rounded font-mono shadow-sm">?</kbd>
+            <span>Shortcuts</span>
+          </motion.button>
+        </motion.div>
       </div>
     </main>
   );
