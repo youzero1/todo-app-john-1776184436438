@@ -9,8 +9,8 @@ interface KeyboardShortcutsModalProps {
 
 const shortcuts = [
   { keys: ['N'], description: 'Focus input to add a new task' },
+  { keys: ['Esc'], description: 'Unfocus input / close this window' },
   { keys: ['?'], description: 'Toggle keyboard shortcuts window' },
-  { keys: ['Esc'], description: 'Close this window / cancel editing' },
   { keys: ['1'], description: 'Switch to All filter' },
   { keys: ['2'], description: 'Switch to Active filter' },
   { keys: ['3'], description: 'Switch to Completed filter' },

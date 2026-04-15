@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, RefObject } from 'react';
+import { useState, RefObject, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface TodoInputProps {
@@ -19,6 +19,21 @@ export default function TodoInput({ onAdd, inputRef }: TodoInputProps) {
       setValue('');
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      const isInput = tag === 'input' || tag === 'textarea';
+
+      if (e.key === 'Escape' && isInput) {
+        e.preventDefault();
+        (e.target as HTMLElement).blur();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-3">
