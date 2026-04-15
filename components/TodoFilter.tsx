@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { FilterType } from '@/types/index';
 
 interface TodoFilterProps {
@@ -17,17 +18,26 @@ export default function TodoFilter({ currentFilter, onFilterChange }: TodoFilter
   return (
     <div className="flex gap-1">
       {filters.map((f) => (
-        <button
+        <motion.button
           key={f.value}
           onClick={() => onFilterChange(f.value)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
+          className={`relative px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 ${
             currentFilter === f.value
-              ? 'bg-orange-100 text-orange-600'
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+              ? 'text-orange-600'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
+          whileTap={{ scale: 0.93 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
         >
-          {f.label}
-        </button>
+          {currentFilter === f.value && (
+            <motion.span
+              layoutId="filter-pill"
+              className="absolute inset-0 bg-orange-100 rounded-lg"
+              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+            />
+          )}
+          <span className="relative z-10">{f.label}</span>
+        </motion.button>
       ))}
     </div>
   );

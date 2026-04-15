@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Todo } from '@/types/index';
 
 interface TodoItemProps {
@@ -13,6 +14,7 @@ interface TodoItemProps {
 export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(todo.text);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,112 +40,190 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
     setIsEditing(false);
   };
 
-  if (isEditing) {
-    return (
-      <div className="px-6 py-4 bg-orange-50">
-        <form onSubmit={handleEditSubmit}>
-          <input
-            type="text"
-            value={editValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValue(e.target.value)}
-            onKeyDown={handleEditKeyDown}
-            onBlur={handleEditBlur}
-            className="w-full px-3 py-2 rounded-lg border border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-700"
-            autoFocus
-          />
-          <div className="flex gap-2 mt-2">
-            <button
-              type="submit"
-              className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEditValue(todo.text);
-                setIsEditing(false);
-              }}
-              className="px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
+  const handleDelete = () => {
+    setIsDeleting(true);
+    setTimeout(() => onDelete(todo.id), 280);
+  };
 
   return (
-    <div
-      className={`group flex items-center gap-4 px-6 py-4 hover:bg-orange-50 transition-colors duration-150 ${
-        todo.completed ? 'opacity-60' : ''
-      }`}
-    >
-      {/* Checkbox */}
-      <button
-        onClick={() => onToggle(todo.id)}
-        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-          todo.completed
-            ? 'bg-green-500 border-green-500'
-            : 'border-gray-300 hover:border-orange-400'
-        }`}
-        aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
-      >
-        {todo.completed && (
-          <svg
-            className="w-3 h-3 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
+    <AnimatePresence mode="wait" initial={false}>
+      {isEditing ? (
+        <motion.div
+          key="editing"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+          className="px-6 py-4 bg-orange-50"
+        >
+          <form onSubmit={handleEditSubmit}>
+            <motion.input
+              type="text"
+              value={editValue}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditValue(e.target.value)}
+              onKeyDown={handleEditKeyDown}
+              onBlur={handleEditBlur}
+              className="w-full px-3 py-2 rounded-lg border border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 text-gray-700"
+              autoFocus
+              initial={{ scale: 0.98 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
+            />
+            <motion.div
+              className="flex gap-2 mt-2"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08, duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            >
+              <motion.button
+                type="submit"
+                className="px-3 py-1 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+              >
+                Save
+              </motion.button>
+              <motion.button
+                type="button"
+                onClick={() => {
+                  setEditValue(todo.text);
+                  setIsEditing(false);
+                }}
+                className="px-3 py-1 bg-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.04 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+              >
+                Cancel
+              </motion.button>
+            </motion.div>
+          </form>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="viewing"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isDeleting ? 0 : 1, x: isDeleting ? 40 : 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
+          className={`group flex items-center gap-4 px-6 py-4 hover:bg-orange-50 transition-colors duration-150`}
+        >
+          {/* Checkbox */}
+          <motion.button
+            onClick={() => onToggle(todo.id)}
+            className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center relative overflow-hidden ${
+              todo.completed
+                ? 'bg-green-500 border-green-500'
+                : 'border-gray-300 hover:border-orange-400'
+            }`}
+            aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
+            whileTap={{ scale: 0.82 }}
+            whileHover={{ scale: 1.12 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 20 }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        )}
-      </button>
+            <AnimatePresence initial={false}>
+              {todo.completed && (
+                <motion.span
+                  key="check"
+                  initial={{ scale: 0, opacity: 0, rotate: -30 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  exit={{ scale: 0, opacity: 0, rotate: 30 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 20 }}
+                  className="flex items-center justify-center"
+                >
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
-      {/* Text */}
-      <span
-        className={`flex-1 text-gray-700 text-sm leading-relaxed ${
-          todo.completed ? 'line-through text-gray-400' : ''
-        }`}
-      >
-        {todo.text}
-      </span>
+          {/* Text */}
+          <motion.span
+            className={`flex-1 text-gray-700 text-sm leading-relaxed ${
+              todo.completed ? 'text-gray-400' : ''
+            }`}
+            animate={{
+              opacity: todo.completed ? 0.55 : 1,
+            }}
+            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <motion.span
+              className="relative inline-block"
+              style={{ textDecoration: 'none' }}
+            >
+              {todo.text}
+              <AnimatePresence>
+                {todo.completed && (
+                  <motion.span
+                    key="strikethrough"
+                    className="absolute left-0 top-1/2 h-px bg-gray-400"
+                    initial={{ width: '0%' }}
+                    animate={{ width: '100%' }}
+                    exit={{ width: '0%' }}
+                    transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+                    style={{ translateY: '-50%' }}
+                  />
+                )}
+              </AnimatePresence>
+            </motion.span>
+          </motion.span>
 
-      {/* Actions */}
-      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <button
-          onClick={() => {
-            setEditValue(todo.text);
-            setIsEditing(true);
-          }}
-          className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
-          aria-label="Edit todo"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-            />
-          </svg>
-        </button>
-        <button
-          onClick={() => onDelete(todo.id)}
-          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-          aria-label="Delete todo"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
+          {/* Actions */}
+          <motion.div
+            className="flex gap-1"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            transition={{ duration: 0.18 }}
+          >
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              <motion.button
+                onClick={() => {
+                  setEditValue(todo.text);
+                  setIsEditing(true);
+                }}
+                className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+                aria-label="Edit todo"
+                whileTap={{ scale: 0.85 }}
+                whileHover={{ scale: 1.15 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </motion.button>
+              <motion.button
+                onClick={handleDelete}
+                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                aria-label="Delete todo"
+                whileTap={{ scale: 0.85 }}
+                whileHover={{ scale: 1.15 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
