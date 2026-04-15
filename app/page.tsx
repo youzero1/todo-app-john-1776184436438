@@ -108,8 +108,7 @@ export default function Home() {
           {/* Empty state */}
           {todos.length === 0 && (
             <div className="py-16 text-center">
-              <div className="text-6xl mb-4">✅</div>
-              <p className="text-gray-400 font-medium">No todos yet!</p>
+              <p className="text-gray-400 font-medium">No todos yet</p>
               <p className="text-gray-300 text-sm mt-1">Add a task above to get started</p>
             </div>
           )}
